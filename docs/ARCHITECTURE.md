@@ -298,7 +298,7 @@ Names marked Proposed are placeholders until the task that introduces them.
 | `VITE_HIDE_UNREVIEWED` | yes (build flag) | Call-language picker | Planned (LT-024) |
 | `ANTHROPIC_API_KEY` | **no** | `/api/cantor`, `scripts/draft-versos.ts` | Planned (LT-021, LT-046) |
 | `JEV_API_KEY` | **no** | `/api/pista` | Planned (LT-044) |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **no** | `/api/pista` rate limit | Proposed names (Upstash planned in LT-044) |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **no** | `/api/pista` rate limit | Read in `api/_lib/redis.ts`; names match Upstash's REST credentials |
 | `REVIEW_CODE` | **no** | `/api/review-auth` | Planned (LT-022) |
 | `ADMIN_CODE` | **no** | `/admin` dashboard | Proposed name (LT-063) |
 | `SUPABASE_SERVICE_ROLE_KEY` | **no** | Review uploads / metrics writes, only if done server-side | Proposed (see Open in section 9) |
