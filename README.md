@@ -12,7 +12,14 @@ Lotería is the picture-bingo that nearly everyone in Mexico grew up with. A cal
 
 ## Project status
 
-**Planning.** This repository doesn't contain application code yet. The product is defined (below) and the build is planned in milestones; this README describes what is being built, not what already runs. Setup instructions will be added here as the scaffold lands.
+**Early build.** The repo holds the product docs, the [architecture plan](docs/ARCHITECTURE.md) and a placeholder landing page built with Vite, React and TypeScript. The game itself (deck, tablas, cantor, rooms) isn't built yet; this README describes what is being built, and the [roadmap](#roadmap) shows the order.
+
+| Doc | What's in it |
+|---|---|
+| [north-star.md](north-star.md) | Product vision, pillars, metrics and rules v1 |
+| [roadmap.md](roadmap.md) | Milestones M0 to M6 and their exit criteria |
+| [tasks.md](tasks.md) | Task-by-task build plan (`LT-xxx` IDs) |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, data model, services, env vars and dependencies |
 
 ## Who it's for
 
@@ -57,16 +64,64 @@ AI is a supporting act. The game is fully playable with no AI at all, and every 
 
 There is no live machine-generated Indigenous-language text, and no synthetic speech for Indigenous languages.
 
-## Tech stack (planned)
+## Tech stack
 
-- **App:** Vite + React + TypeScript (`strict`) PWA, deployed on Vercel Hobby.
+**In the repo today:** Vite, React 19 and TypeScript, built with pnpm on Node 22 and deployed to Vercel.
+
+**Planned** (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full design):
+
+- **App:** an installable PWA on Vercel Hobby.
 - **Multiplayer:** Supabase Realtime broadcast rooms, sized for a classroom of up to 40 players. Only the host broadcasts calls; clients send claims and marks.
 - **Offline:** IndexedDB and Workbox (`vite-plugin-pwa`), with the app shell, card art and reviewed audio precached.
-- **Server functions:** `/api/pista` (hint) and `/api/cantor` (banter) on Vercel.
+- **Server functions:** `/api/pista` (hint), `/api/cantor` (banter), `/api/metrics` and `/api/review-auth` on Vercel.
 - **Printing:** paper tablas are generated in the browser with `pdf-lib`.
-- **Tooling:** pnpm, ESLint, Prettier, Vitest, Playwright, i18next, and a single `pnpm check` script run in CI on every PR.
+- **Tooling:** ESLint, Prettier, Vitest, Playwright, i18next, and a single `pnpm check` script run in CI on every PR.
 
-### Planned layout
+## Getting started
+
+You need Node 22 (see `.nvmrc`) and pnpm 10 (`corepack enable` picks up the version pinned in `package.json`).
+
+```sh
+pnpm install
+pnpm dev        # start the dev server
+```
+
+| Script | What it does |
+|---|---|
+| `pnpm dev` | Vite dev server with hot reload |
+| `pnpm build` | Type-check (`tsc -b`) and build to `dist/` |
+| `pnpm preview` | Serve the production build locally |
+| `pnpm typecheck` | Type-check only |
+| `pnpm check:services` | Read-only connectivity check for Supabase, Upstash Redis and Anthropic. It reads `.env.local`, prints pass, fail or "not configured" per service, and never prints values |
+
+### Environment variables
+
+The landing page needs none. The names the game will use are listed in [`.env.example`](.env.example) with empty values, and explained in section 10 of [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Real values live in the Vercel project settings:
+
+```sh
+vercel link && vercel env pull .env.local
+pnpm check:services
+```
+
+Anything prefixed `VITE_` is compiled into the public bundle, so a secret never gets that prefix.
+
+### Deployment
+
+[`vercel.json`](vercel.json) pins the Vercel build: `pnpm install --frozen-lockfile`, then `pnpm build`, serving `dist/`. The plan is for every PR to get a preview URL and for `main` to deploy to production.
+
+### Repository layout
+
+```
+index.html               page shell
+src/main.tsx             entry point
+src/Landing.tsx          placeholder landing page (and landing.css)
+public/                  static files (favicon)
+scripts/                 check-services.mjs
+docs/ARCHITECTURE.md     architecture and dependencies
+north-star.md, roadmap.md, tasks.md   product docs
+```
+
+The planned layout as the game lands (from [tasks.md](tasks.md)):
 
 ```
 src/
@@ -76,7 +131,7 @@ src/
   ai/       hint and pacing providers (online + offline)
   content/  cards.json, translations, credits
   print/    PDF tablas
-api/        Vercel functions (/api/pista, /api/cantor, /api/metrics)
+api/        Vercel functions
 ```
 
 ## Roadmap
@@ -110,7 +165,7 @@ Metrics are anonymous counters only, and there is an opt-out switch.
 
 Indigenous-language names and recordings ship only after review by a native speaker. Content that hasn't been reviewed yet is shown with an **"en revisión"** badge, and a call without approved audio shows its text with an **"audio pendiente"** badge rather than synthetic speech. The card list itself goes through community review before any art is commissioned, and every recording and illustration is credited.
 
-If you'd like to help with vocabulary, recordings, illustration or review, please open an issue describing your language or skill.
+If you'd like to help with vocabulary, recordings, illustration or review, please open an issue describing your language or skill. Code changes go through pull requests against `main`.
 
 ## License
 
